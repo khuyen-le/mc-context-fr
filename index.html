@@ -1,79 +1,743 @@
 <!doctype html>
 <html>
-    
-    <head>
-        <title>My experiment</title>
-        <!-- Load jQuery -->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <!-- Load the jspsych library and plugins -->
-        <script src="scripts/jspsych.js"></script>
-        <script src="scripts/plugins/jspsych-text.js"></script>
-        <script src="scripts/plugins/jspsych-single-stim.js"></script>
-        <!-- Load the stylesheet -->
-        <link href="css/jspsych.css" type="text/css" rel="stylesheet"></link>
-    </head>
-    
-    <body>
-        <div id="jspsych_target"></div>
-    </body>
-    
-    <script type="text/javascript">
-        // Experiment parameters
-        var n_trials_per_stimulus = 5;
-        
-        // Experiment Instructions
-        var welcome_message = '<div id="instructions"><p>Welcome to the experiment. Press enter to begin.</p></div>';
-        
-        var instructions = '<div id="instructions"><p>You will see a series of images that look similar to this:</p>\
-            <p><img src="img/incongruent_right.gif"></p><p>Press the arrow key that corresponds to the direction that\
-            the middle arrow is pointing. For example, in this case you would press the right arrow key.</p>\
-            <p>Press enter to start.</p>';
 
-        var debrief = '<div id="instructions"><p>Thank you for participating! Press enter to see the data.</p></div>';
+<head>
+  <title>Experiment</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+  <script src="scripts/lodash/lodash.js"></script>
+  <script src="scripts/jspsych.js"></script>
+  <script src="scripts/plugins/plugin-preload.js"></script>
+  <script src="scripts/plugins/plugin-html-button-response.js"></script>
+  <script src="scripts/plugins/plugin-fullscreen.js"></script>
+  <script src="scripts/plugins/plugin-instructions.js"></script>
+  <script src="scripts/plugins/plugin-survey.js"></script>
+  <script src="scripts/plugins/plugin-survey-likert.js"></script>
+  <script src="scripts/plugins/plugin-survey-multi-select.js"></script>
+  <script src="scripts/plugins/plugin-survey-multi-choice.js"></script>
+  <script src="scripts/plugins/plugin-survey-text.js"></script>
+  <script src="scripts/plugins/plugin-audio-button-response.js"></script>
+  <script src="scripts/plugins/customs/survey-dropdown.js"></script>
+  <script src="scripts/plugins/customs/survey-multi-choice-image.js"></script>
+  <script src="scripts/plugins/customs/image-audio-button-response-prompt-position.js"></script>
+  <script src="scripts/plugins/customs/image-button-response-prompt-position.js"></script>
+  <script src="scripts/plugins/customs/video-button-response-prompt-position.js"></script>
+  <script src="expt_script/instructions_demog.js"></script>
+  <script src="expt_script/items_instructions_goals.js"></script>
+  <script src="expt_script/countries_languages.js"></script>
+  <link href="css/jspsych.css" type="text/css" rel="stylesheet"></link>
+  <link href="css/experiment.css" rel="stylesheet" type="text/css">
+  </link>
+</head>
 
-        // Generating Random Order for Stimuli
-		
-		var stimuli = [
-			{image: "img/congruent_left.gif", data: { stimulus_type: "congruent" }}, 
-			{image: "img/congruent_right.gif", data: { stimulus_type: "congruent" }},
-			{image: "img/incongruent_left.gif", data: { stimulus_type: "incongruent" }},
-			{image: "img/incongruent_right.gif", data: { stimulus_type: "incongruent" }},
-		];
-        
-		var trial_info = jsPsych.randomization.repeat(stimuli, n_trials_per_stimulus, true);
-        
-        // Define experiment blocks
-        var instruction_block = {
-                type: "text",
-                text: [welcome_message, instructions],
-                timing_post_trial: 1500
-            };
-        
-        var test_block = {
-                type: "single-stim",
-                stimuli: trial_info.image,
-                choices: [37, 39],
-                data: trial_info.data,
-				timing_post_trial: function() {
-					return Math.floor(Math.random()*1000)+1000;
-				}
-            };
-            
-        var debrief_block = {
-                type: "text",
-                text: [debrief]
-            };
-            
-		jsPsych.preloadImages(trial_info.image, function() { start_experiment(); });
-		
-		function start_experiment() {
-			jsPsych.init({
-				display_element: $('#jspsych_target'),
-				experiment_structure: [instruction_block, test_block, debrief_block],
-				on_finish: function(data) {
-					jsPsych.dataAPI.displayData();
-				}
-			});
-		}
-    </script>
+<body>
+  <script>
+    function shuffle(array) {
+      return _.shuffle(array);
+    }
+
+    /* initialize jsPsych */
+    var jsPsych = initJsPsych({
+      show_progress_bar: true,
+      auto_update_progress_bar: false,
+      /*
+      on_finish: function () {
+        console.log(jsPsych.data.get()); //final data
+        var data = jsPsych.data.get();
+        $.ajax({
+          type: "POST",
+          url: "/MC-context/experiment-data",
+          data: JSON.stringify({ data: data, 
+            subject_id: subject_id}),
+          contentType: "application/json"
+        })
+          .done(function () {
+            // do this within the flow of the experiments
+            if (pass_practice < 2) {
+              window.location.href = "MC-context/return"
+            } else {
+              window.location.href = "MC-context/finish";
+            }
+          })
+          .fail(function () {
+            alert("Un problème est survenu lors de l'écriture dans la base de données. Veuillez contacter le chercheur pour plus d'informations.")
+          })
+      }
+          */
+    }); 
+
+    /* create timeline */
+    var timeline = [];
+
+    var context = jsPsych.data.getURLVariable('cont'); //?cont=ID
+    jsPsych.data.addProperties({
+      "context": context == "ID" ? "individual" : "function",
+    })
+
+    console.log(context);
+
+    // PRELOADING
+    var img_stimuli_dir = '<%- img_stimuli_dir %>';
+    img_stimuli_dir = img_stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
+    img_stimuli_dir = img_stimuli_dir.map(function (stim) {
+      return "img/" + stim;
+    })
+    let stimuli_dir_img = img_stimuli_dir.filter(stim => stim.includes(".png"));
+    //console.log(stimuli_dir_img);
+
+    var audio_stimuli_dir = '<%- audio_stimuli_dir %>';
+    audio_stimuli_dir = audio_stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
+    audio_stimuli_dir = audio_stimuli_dir.map(function (stim) {
+      return "audio/" + stim;
+    })
+    let stimuli_dir_audio = audio_stimuli_dir.filter(stim => stim.includes(".mp3"));
+    //console.log(stimuli_dir_audio);
+
+    var preload = {
+      type: jsPsychPreload,
+      images: stimuli_dir_img, 
+      audio: stimuli_dir_audio
+    };
+    timeline.push(preload);
+
+    // capture info from Prolific, replace_subject_id
+    var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    subject_id = "CON-" + context + '-' + subject_id + '-' + jsPsych.randomization.randomID(3); // EN for English 
+    var study_id = jsPsych.data.getURLVariable('STUDY_ID');
+    var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+
+    jsPsych.data.addProperties({
+      subject_id: subject_id,
+      study_id: study_id,
+      session_id: session_id,
+    }); 
+
+    /** GRAB THE USER LANG FOR EXCLUSION **/
+    var userLang = navigator.language || navigator.userLanguage; 
+    jsPsych.data.addProperties({ "user_lang" : userLang});
+
+    /** CONSENT FORM AND INSTRUCTIONS **/
+   var instructions = {
+      type: jsPsychInstructions,
+      pages: first_page_instruction, // TODO: CHANGE THIS //
+      show_clickable_nav: true,
+      allow_backward: false,
+      on_start: function () {
+        // set progress bar to 0 at the start of experiment
+        jsPsych.setProgressBar(0);
+      }
+    }; 
+
+    timeline.push(instructions);  
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// SET UP ///////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    var enter_fullscreen = {
+      type: jsPsychFullscreen,
+      message: fullscreen_instr,
+      fullscreen_mode: true,
+    }
+
+    var trial_in_fullscreen = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: fullscreen_thanks,
+      choices: ['Continuer']
+    }
+
+    var audio_on = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: audio_instr,
+      choices: ['Continuer']
+    }
+
+    timeline.push(enter_fullscreen); 
+    timeline.push(trial_in_fullscreen);
+    timeline.push(audio_on);
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// INTRO ////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    var intro  = {
+      timeline: [
+        {
+          type: customImageButtonResponsePromptPos, 
+          stimulus: 'img/penguin.png',
+          stimulus_height: 150, 
+          choices: ["Continuer"],
+          prompt: `Voici Manchot.<br>
+                   Dans cette expérience, vous écouterez des histoires avec Manchot.`,
+          prompt_before_stim: true,
+          on_load: function()
+            {
+              //hide the continue button
+              document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "hidden";
+              setTimeout(function(){
+                document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "visible";
+              }, 3000); 
+            },
+          
+        }, 
+        {
+          type: customImageButtonResponsePromptPos, 
+          stimulus: 'img/intro_penguin.png',
+          stimulus_height: 450, 
+          choices: ["Continue"],
+          prompt: `Voici les amis de Manchot dans les histoires:<br>
+                   Monstre Bleu et Monstre Rouge.`,
+          prompt_before_stim: true,
+          on_load: function()
+            {
+              //hide the continue button
+              document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "hidden";
+              setTimeout(function(){
+                document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "visible";
+              }, 3000); 
+            },
+        },
+        {
+          type: customImageButtonResponsePromptPos, 
+          stimulus: 'img/intro_penguin.png',
+          stimulus_height: 450, 
+          choices: ["Continuer"],
+          prompt: `Après chaque histoire, Manchot répond à une question.<br>
+                   Votre tâche consiste à déterminer si Manchot a tort ou raison.`,
+          prompt_before_stim: true,
+          on_load: function()
+            {
+              //hide the continue button
+              document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "hidden";
+              setTimeout(function(){
+                document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "visible";
+              }, 5000); 
+            },
+        },
+        {
+          type: customImageButtonResponsePromptPos, 
+          stimulus: 'img/penguin.png',
+          stimulus_height: 150, 
+          choices: ["Continuer"],
+          prompt: `Entraînons-nous!<br> 
+                   Les questions d'entraînement sont également des questions de contrôle de compréhension. 
+                   Vous aurez 2 chances d'y répondre correctement.`,
+          prompt_before_stim: true,
+          on_load: function()
+            {
+              //hide the continue button
+              document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "hidden";
+              setTimeout(function(){
+                document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "visible";
+              }, 1000); 
+            },
+        }, 
+      ]
+    }
+
+    timeline.push(intro);
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// PRACTICE TRIALS //////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    
+    var practice_preamble = {
+      type: customImageAudioButtonResponsePromptPos, 
+      stimulus: 'img/intro_conditional.png',
+      stimulus_height: 450, 
+      stimulus_audio: 'audio/preamble_neutral.mp3',
+      choices: ["Continuer"],
+      prompt: preamble_neutral + "<br>",
+      prompt_before_stim: true,
+      response_allowed_while_playing: false
+    }
+
+    //timeline.push(practice_preamble);
+
+    var pass_practice = 0 //need to get to 2
+    var practice_tries = 0
+    var practice_trials = {
+      timeline: [
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('intro_slide'),
+          stimulus_height: 450, 
+          stimulus_audio: preamble_neutral_audio,
+          choices: ["Continuer"],
+          prompt: preamble_neutral,  
+          prompt_before_stim: true,
+          response_allowed_while_playing: false
+
+        },
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_img'), 
+          stimulus_height: 450, 
+          stimulus_audio: jsPsych.timelineVariable('trial_audio'),
+          choices: ['Continuer'], 
+          prompt: preamble_neutral,
+          prompt_before_stim: true,
+          response_allowed_while_playing: false, 
+          
+        },
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_img'), 
+          stimulus_height: 450, 
+          stimulus_audio: jsPsych.timelineVariable('prompt'),
+          choices: ['Continuer'],
+          prompt: preamble_neutral, 
+          prompt2: jsPsych.timelineVariable('prompt_text'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false, 
+        },
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_penguin_talk'), 
+          stimulus_height: 450, 
+          stimulus_audio: jsPsych.timelineVariable('trial_penguin'),
+          choices: ['Continuer'],
+          prompt: preamble_neutral, 
+          prompt2: jsPsych.timelineVariable('trial_penguin_text'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false, 
+        }, 
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_img'), 
+          stimulus_height: 450, 
+          stimulus_audio: right_or_wrong,
+          choices: ["Manchot a raison", "Manchot a tort"],
+          prompt: preamble_neutral,
+          prompt2: jsPsych.timelineVariable('trial_penguin_text'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false, 
+          on_finish: function(data) {
+            data.trial_type = jsPsych.timelineVariable('trial_type');
+            if (data.response == jsPsych.timelineVariable('correct_resp')) {
+              pass_practice++;
+            }
+            data.trial_id = jsPsych.timelineVariable('trial_id');
+            data.correct_resp = jsPsych.timelineVariable('correct_resp');
+          }
+        } 
+        ], 
+      timeline_variables: practice_trials, 
+      loop_function: function(data){
+        practice_tries++;
+      
+        if (pass_practice == 2) { // pass!
+          return false;
+        } else if (practice_tries == 2) { // end if fail twice
+          jsPsych.endExperiment(early_end_instr); // end if fail twice.
+        } else {
+          console.log(practice_tries);
+          pass_practice = 0; // loop, reset pass_practice
+          return true;
+        }
+      }
+    }
+    timeline.push(practice_trials);
+
+    var practice_eval = { // need this as a buffer...
+      type: jsPsychHtmlButtonResponse,
+      stimulus: "",
+      button_html: '',
+      choices: [''], 
+      on_load: function()
+        {
+          setTimeout(function(){
+            jsPsych.finishTrial();
+          }, 100); 
+        },
+    }
+    timeline.push(practice_eval);
+
+    var finish_practice = {
+      type: customImageButtonResponsePromptPos, 
+      stimulus: 'img/penguin.png',
+      stimulus_height: 150, 
+      choices: ["Continuer"],
+      prompt: `Vous avez terminé les questions d'entraînement. 
+              Veuillez cliquer sur le bouton ci-dessous pour continuer.
+              <br>
+              Veuillez prêter une attention particulière à chaque question.`,
+      prompt_before_stim: true,
+      on_load: function()
+        {
+          //hide the continue button
+          document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "hidden";
+          setTimeout(function(){
+            document.getElementById("jspsych-image-button-response-btngroup").style.visibility = "visible";
+          }, 1000); 
+        },
+    }
+
+  timeline.push(finish_practice);
+
+/*   var conditional_preamble = {
+    timeline: [
+      {
+        type: customImageAudioButtonResponsePromptPos, 
+        stimulus: 'img/intro_conditional.png',
+        stimulus_height: 450, 
+        stimulus_audio: context =="ID" ? 'audio/preamble_id.mp3' : 'audio/preamble_fn.mp3',
+        choices: ["Continue"],
+        prompt: context == "ID" ? preamble_id : preamble_fn,
+        prompt_before_stim: true,
+        response_allowed_while_playing: false
+      },
+      {
+        type: customImageAudioButtonResponsePromptPos, 
+        stimulus: 'img/intro_conditional.png',
+        stimulus_height: 450, 
+        stimulus_audio: context == "ID" ? 'audio/preamble2_id.mp3' : 'audio/preamble2_fn.mp3',
+        choices: ["Continue"],
+        prompt: (context == "ID" ? prompt_id : prompt_fn) + "<br>",
+        prompt_before_stim: true,
+        response_allowed_while_playing: false
+      },
+    ]
+  }
+
+  timeline.push(conditional_preamble); */
+
+  ////////////////////////////////////////////////////////////////////////
+  ///////////////////// STUDY PHASE //////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////    
+
+  function generate_trials(trials, is_attention) {
+      return ({
+      timeline: [
+        // penguin's explicit goals OR "Look what the monsters have."
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: context == "FN" ? jsPsych.timelineVariable('intro_slide_fn') : jsPsych.timelineVariable('intro_slide_id'),
+          stimulus_height: 450, 
+          stimulus_audio: context == "FN" ? jsPsych.timelineVariable('intro_audio_fn') : jsPsych.timelineVariable('intro_audio_id'),
+          choices: ["Continuer"],
+          prompt: context == "FN" ? jsPsych.timelineVariable('trial_text_fn') : jsPsych.timelineVariable('trial_text_id'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false
+
+        },
+        // monster has this and that
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_img'), 
+          stimulus_height: 450, 
+          stimulus_audio: jsPsych.timelineVariable('trial_audio'),
+          choices: ["Continuer"],
+          prompt: context == "FN" ? jsPsych.timelineVariable('trial_text_fn') : jsPsych.timelineVariable('trial_text_id'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false
+
+        },
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_img'), 
+          stimulus_height: 450, 
+          stimulus_audio: jsPsych.timelineVariable('prompt'),
+          choices: ["Continuer"],
+          prompt: context == "FN" ? jsPsych.timelineVariable('trial_text_fn') : jsPsych.timelineVariable('trial_text_id'),
+          prompt2: jsPsych.timelineVariable('prompt_text'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false
+        },
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_penguin_talk'), 
+          stimulus_height: 450, 
+          stimulus_audio: jsPsych.timelineVariable('trial_penguin'),
+          choices: ["Continuer"],
+          prompt: context == "FN" ? jsPsych.timelineVariable('trial_text_fn') : jsPsych.timelineVariable('trial_text_id'),
+          prompt2: jsPsych.timelineVariable('trial_penguin_text'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false
+        }, 
+        {
+          type: customImageAudioButtonResponsePromptPos, 
+          stimulus: jsPsych.timelineVariable('trial_img'), 
+          stimulus_height: 450, 
+          stimulus_audio: is_attention ? 
+                              jsPsych.timelineVariable('trial_prompt_att') : // get the first element and pop it
+                              right_or_wrong, 
+          choices: ["Manchot a raison", "Manchot a tort"],
+          prompt:  context == "FN" ? jsPsych.timelineVariable('trial_text_fn') : jsPsych.timelineVariable('trial_text_id'),
+          prompt2: is_attention ? 
+                    jsPsych.timelineVariable('prompt_att') : // get the first element and pop it 
+                    jsPsych.timelineVariable('trial_penguin_text'),
+          prompt_before_stim: true,
+          response_allowed_while_playing: false,
+          on_finish: function(data) {
+            let curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+            //jsPsych.setProgressBar(curr_progress_bar_value + (1 / 18));
+            jsPsych.setProgressBar(curr_progress_bar_value + (1 / 18));
+            data.trial_type = jsPsych.timelineVariable('trial_type');
+            data.trial_id = jsPsych.timelineVariable('trial_id');
+            if (jsPsych.timelineVariable('trial_type') == "critical") {
+              data.trial_item = jsPsych.timelineVariable('trial_item');
+              data.trial_variety_monster = jsPsych.timelineVariable('trial_variety_monster');
+              data.response_monster = jsPsych.timelineVariable('response_monster');
+              data.coded_variety_ans = jsPsych.timelineVariable('coded_variety_ans');
+            } else { //if comprehension or attention
+              data.correct_resp = jsPsych.timelineVariable('correct_resp');
+            }
+          }
+        }
+      ], 
+      timeline_variables: trials, 
+      //randomize_order: true, 
+    })}
+
+
+    var trial_timeline_1 = generate_trials(all_trials.slice(0,6), is_attention = false);
+    var trial_timeline_2 = generate_trials(att_trials.slice(0,1), is_attention = true);
+    var trial_timeline_3 = generate_trials(all_trials.slice(6, 11), is_attention = false); 
+    var trial_timeline_4 = generate_trials(att_trials.slice(1), is_attention = true);
+    var trial_timeline_5 = generate_trials(all_trials.slice(11), is_attention = false);
+
+    /*
+    var trial_timeline_1 = generate_trials(all_trials.slice(0,3), is_attention = false);
+    var trial_timeline_2 = generate_trials(att_trials.slice(0,1), is_attention = true);
+    var trial_timeline_3 = generate_trials(all_trials.slice(3, 5), is_attention = false); 
+    var trial_timeline_4 = generate_trials(att_trials.slice(1), is_attention = true);
+    var trial_timeline_5 = generate_trials(all_trials.slice(5), is_attention = false);
+    */
+
+    timeline.push(trial_timeline_1);
+    timeline.push(trial_timeline_2);
+    timeline.push(trial_timeline_3);
+    timeline.push(trial_timeline_4);
+    timeline.push(trial_timeline_5);
+
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// demog Qs start from here /////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    // intro page
+    var demog_intro = {
+      type: jsPsychInstructions,
+      pages: demog_instr,
+      show_clickable_nav: true,
+      allow_backward: false
+    }
+
+    timeline.push(demog_intro);
+
+    var demog_country_current = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_current_country_instr,
+          name: 'demog_country_current',
+          //options: countryList,
+          options: countryList.map(country => country.name_fr),
+          //options: countryList.map(country => country.name_en),
+          required: true
+        },
+      ],
+      data: {
+        demog_question: 'demog_country_current'
+      }
+    }
+
+    var demog_language_first = {
+      type: jsPsychSurveyMultiChoice,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_language_first_instr,
+          name: 'demog_language_first',
+          options: demog_language_first_opts,
+          required: true,
+        },
+      ],
+      data: {
+        demog_question: "demog_language_first"
+      },
+    };
+
+
+    var demog_language_others = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_language_others_instr,
+          name: 'demog_language_others',
+          //options: languageList,
+          //options: languageList.map(language => language.name_en),
+          options: languageList.map(language => language.name_fr),
+        },
+      ],
+      data: {
+        demog_question: 'demog_language_others'
+      },
+    }
+
+    function get_prev_answer(key) {
+      return jsPsych.data.get().last(1).values()[0].response[key];
+    }
+
+    var demog_language_others_fluency = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: function () {
+            return demog_language_others_fluency_sp + get_prev_answer('demog_language_others') + ' parlé';
+          },
+          name: 'demog_language_others_fluency_sp',
+          options: demog_language_others_fluency_opts,
+          required: true,
+        },
+        {
+          prompt: function () {
+            return demog_language_others_fluency_ud + get_prev_answer('demog_language_others');
+          },
+          name: 'demog_language_others_fluency_ud',
+          options: demog_language_others_fluency_opts,
+          required: true,
+        }
+      ],
+      data: {
+        demog_question: 'demog_language_others_fluency',
+      }
+    }
+
+    var demog_language_others_fluency_conditional_node = {
+      timeline: [demog_language_others_fluency],
+      conditional_function: function () {
+        return (get_prev_answer("demog_language_others") != "");
+      }
+    }
+
+    var demog_language_others_loop = {
+      timeline: [demog_language_others, demog_language_others_fluency_conditional_node],
+      loop_function: function (data) {
+        return (get_prev_answer("demog_language_others") != ""); // if the previous node has demog_language_others, then continue looping. if not then stop.
+      }
+    }
+
+    var demog_age_gender = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_age_instr,
+          name: 'demog_age',
+          options: demog_age_opts,
+          required: true,
+        },
+        {
+          prompt: demog_gender_instr,
+          name: 'demog_gender',
+          options: demog_gender_opts,
+          required: true,
+        },
+      ],
+      data: {
+        demog_question: 'demog_age_gender',
+      }
+    }
+
+    /*
+    var demog_ethnic = {
+      type: jsPsychSurveyMultiSelect,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_ethnic_instr,
+          options: demog_ethnic_opts,
+          name: 'demog_ethnic'
+        },
+      ],
+      data: {
+        demog_question: 'demog_ethnic',
+      }
+    };
+    */
+
+    var demog_objses = {
+      type: jsPsychSurveyMultiChoice,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_objective_ses_instr,
+          name: 'demog_objses',
+          options: demog_objective_ses_opts,
+        },
+      ],
+      data: {
+        demog_question: "demog_objses"
+      },
+    }
+    var demog_meta = {
+      type: jsPsychSurveyText,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_meta_instr,
+          name: "demog_meta",
+          rows: 5
+        }
+      ],
+      data: {
+        demog_question: "demog_meta"
+      }
+    }
+
+    var demog_final_feedback = {
+      type: jsPsychSurveyText,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_final_feedback_instr,
+          name: "demog_final_feedback",
+          rows: 5
+        }
+      ],
+      data: {
+        demog_question: "demog_final_feedback"
+      }
+    }
+
+    var demog_qs = [
+      demog_country_current,
+      demog_language_first,
+      demog_language_others_loop,
+      demog_age_gender, 
+      //demog_ethnic, 
+      demog_objses,
+      demog_meta,
+      demog_final_feedback, 
+    ];
+
+    demog_qs.map(function (demog_q) {
+      if (!demog_q.data) {
+        demog_q.data = {}
+      }
+      demog_q.data.phase = "demog";
+      timeline.push(demog_q);
+    })
+
+
+    const save_data = {
+      type: jsPsychPipe,
+      action: "save",
+      experiment_id: "DljTrrUJz5w5",
+      filename: `${subject_id}.csv`,
+      data_string: ()=>jsPsych.data.get().json()
+    };
+
+    timeline.push(save_data)
+    /* start the experiment */
+    jsPsych.run(timeline);
+
+  </script>
+</body>
+
 </html>
