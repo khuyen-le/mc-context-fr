@@ -40,7 +40,22 @@
     var jsPsych = initJsPsych({
       show_progress_bar: true,
       auto_update_progress_bar: false,
-      
+      on_finish: function(){
+        fetch("https://pipe.jspsych.org/api/data/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "*/*",
+        },
+        body: JSON.stringify({
+          experimentID: "DljTrrUJz5w5",
+          filename: `MC_${subject_id}.json`,
+          data: JSON.stringify({ data: jsPsych.data.get(), 
+            subject_id: subject_id}),
+        }),
+      });
+      }
+
       /*
       on_finish: function () {
         console.log(jsPsych.data.get()); //final data
@@ -729,18 +744,6 @@
       timeline.push(demog_q);
     })
       */
-
-
-      
-    const save_data = {
-      type: jsPsychPipe,
-      action: "save",
-      experiment_id: "DljTrrUJz5w5",
-      filename: `${subject_id}.json`,
-      data_string: ()=>jsPsych.data.get().json()
-    };
-
-    timeline.push(save_data);
     
     /* start the experiment */
     jsPsych.run(timeline);
