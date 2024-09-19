@@ -40,6 +40,7 @@
     var jsPsych = initJsPsych({
       show_progress_bar: true,
       auto_update_progress_bar: false,
+      
       /*
       on_finish: function () {
         console.log(jsPsych.data.get()); //final data
@@ -730,15 +731,17 @@
       */
 
 
+      
     const save_data = {
       type: jsPsychPipe,
       action: "save",
       experiment_id: "DljTrrUJz5w5",
-      filename: `${subject_id}.csv`,
+      filename: `${subject_id}.json`,
       data_string: ()=>jsPsych.data.get().json()
     };
 
     timeline.push(save_data);
+    
     /* start the experiment */
     jsPsych.run(timeline);
 
