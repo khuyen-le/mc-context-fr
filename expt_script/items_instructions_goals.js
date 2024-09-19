@@ -36,7 +36,7 @@ var practice_trials = shuffle([
     intro_slide: "img/intro_neutral_red_left.png",
     trial_img: "img/practice_2.png",
     prompt: "audio/practice_2_prompt.mp3",
-    trial_Manchot_talk: "img/practice_2_talk.png",
+    trial_penguin_talk: "img/practice_2_talk.png",
     trial_audio: "audio/practice_2.mp3",
     trial_penguin: "audio/practice_2_ans.mp3",
     correct_resp: WRONG,
