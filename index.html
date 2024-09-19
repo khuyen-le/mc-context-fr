@@ -168,9 +168,11 @@
       choices: ['Continuer']
     }
 
+    /*
     timeline.push(enter_fullscreen); 
     timeline.push(trial_in_fullscreen);
     timeline.push(audio_on);
+    */
 
     ////////////////////////////////////////////////////////////////////////
     ///////////////////// INTRO ////////////////////////////////////////////
@@ -353,7 +355,7 @@
         }
       }
     }
-    timeline.push(practice_trials);
+    //timeline.push(practice_trials);
 
     var practice_eval = { // need this as a buffer...
       type: jsPsychHtmlButtonResponse,
@@ -367,7 +369,7 @@
           }, 100); 
         },
     }
-    timeline.push(practice_eval);
+    //timeline.push(practice_eval);
 
     var finish_practice = {
       type: customImageButtonResponsePromptPos, 
@@ -389,7 +391,7 @@
         },
     }
 
-  timeline.push(finish_practice);
+  //timeline.push(finish_practice);
 
 /*   var conditional_preamble = {
     timeline: [
@@ -531,6 +533,7 @@
     //timeline.push(trial_timeline_5);
 
     //timeline = timeline.concat(crit_trials);
+    
     ////////////////////////////////////////////////////////////////////////
     ///////////////////// demog Qs start from here /////////////////////////
     ////////////////////////////////////////////////////////////////////////
