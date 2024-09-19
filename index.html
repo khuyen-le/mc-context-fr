@@ -41,20 +41,41 @@
       show_progress_bar: true,
       auto_update_progress_bar: false,
       on_finish: function(){
+        window.open("/mc-context-fr/views/return.html")
         fetch("https://pipe.jspsych.org/api/data/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "*/*",
-        },
-        body: JSON.stringify({
-          experimentID: "DljTrrUJz5w5",
-          filename: `MC_${subject_id}.json`,
-          data: JSON.stringify({ data: jsPsych.data.get(), 
-            subject_id: subject_id}),
-        }),
-      });
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "*/*",
+          },
+          body: JSON.stringify({
+            experimentID: "DljTrrUJz5w5",
+            filename: `MC_${subject_id}.json`,
+            data: JSON.stringify(
+              { data: jsPsych.data.get(), 
+              subject_id: subject_id, 
+              language: "fr"}),
+          }),
+        })
+        .then(function(){
+          // do this within the flow of the experiments
+          if (pass_practice < 2) {
+            window.open("/mc-context-fr/views/return.html")
+          } else {
+            window.open("/mc-context-fr/views/finish.html")
+          }
+        })
+        .fail(function () {
+            alert("Un problème est survenu lors de l'écriture dans la base de données. Veuillez contacter le chercheur pour plus d'informations.")
+        })
       }
+            
+          /*
+          .fail(function () {
+            alert("Un problème est survenu lors de l'écriture dans la base de données. Veuillez contacter le chercheur pour plus d'informations.")
+          })
+            */
+
 
       /*
       on_finish: function () {
