@@ -41,7 +41,6 @@
       show_progress_bar: true,
       auto_update_progress_bar: false,
       on_finish: function(){
-        window.open("/mc-context-fr/views/finish.html")
         fetch("https://pipe.jspsych.org/api/data/", {
           method: "POST",
           headers: {
@@ -57,17 +56,12 @@
               language: "fr"}),
           }),
         })
-        .then(function(){
-          // do this within the flow of the experiments
-          if (pass_practice < 2) {
-            window.open("/mc-context-fr/views/fail-check.html")
-          } else {
-            window.open("/mc-context-fr/views/finish.html")
-          }
-        })
-        .fail(function () {
-            alert("Un problème est survenu lors de l'écriture dans la base de données. Veuillez contacter le chercheur pour plus d'informations.")
-        })
+        if (pass_practice < 2) {
+          window.open("/mc-context-fr/views/fail-check.html")
+        } else {
+          console.log("I got here!")
+          window.open("/mc-context-fr/views/finish.html")
+        }
       }
             
           /*
