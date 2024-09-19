@@ -505,13 +505,16 @@
     var trial_timeline_5 = generate_trials(all_trials.slice(5), is_attention = false);
     */
 
-    timeline.push(trial_timeline_1);
-    timeline.push(trial_timeline_2);
-    timeline.push(trial_timeline_3);
-    timeline.push(trial_timeline_4);
-    timeline.push(trial_timeline_5);
+    var crit_trials = [trial_timeline_1, trial_timeline_2, 
+                        trial_timeline_3, trial_timeline_4, 
+                        trial_timeline_5]
+    //timeline.push(trial_timeline_1);
+    //timeline.push(trial_timeline_2);
+    //timeline.push(trial_timeline_3);
+    //timeline.push(trial_timeline_4);
+    //timeline.push(trial_timeline_5);
 
-
+    //timeline = timeline.concat(crit_trials);
     ////////////////////////////////////////////////////////////////////////
     ///////////////////// demog Qs start from here /////////////////////////
     ////////////////////////////////////////////////////////////////////////
@@ -716,6 +719,7 @@
       demog_final_feedback, 
     ];
 
+    /*
     demog_qs.map(function (demog_q) {
       if (!demog_q.data) {
         demog_q.data = {}
@@ -723,6 +727,7 @@
       demog_q.data.phase = "demog";
       timeline.push(demog_q);
     })
+      */
 
 
     const save_data = {
