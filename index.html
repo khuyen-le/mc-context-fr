@@ -4,7 +4,6 @@
 <head>
   <title>Experiment</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe@0.3"></script>
   <script src="scripts/lodash/lodash.js"></script>
   <script src="scripts/jspsych.js"></script>
   <script src="scripts/plugins/plugin-preload.js"></script>
@@ -93,8 +92,9 @@
 
     var preload = {
       type: jsPsychPreload,
-      images: stimuli_dir_img, 
-      audio: stimuli_dir_audio
+      //images: stimuli_dir_img, 
+      //audio: stimuli_dir_audio
+      auto_preload: true
     };
     timeline.push(preload);
 
