@@ -102,6 +102,4 @@ demog_objective_ses_opts = ["BEPC, diplôme national du Brevet ou moins", "CAP, 
 demog_final_feedback_instr = "Certaines parties de cette expérience vous ont-elles semblé déroutantes?<p></p>Nous apprécions grandement vos commentaires!"
 demog_meta_instr = "Quelles stratégies avez-vous utilisées pour répondre aux questions de l’étude?"
 
-//demog_pid_instr = `Please enter the last 4 digits of your PID. We will use this to verify your responses.<font color="brown">*</font>`
-
 ////////////////////// demog questions end ////////////////////////

@@ -59,42 +59,9 @@
         if (pass_practice < 2) {
           window.open("/mc-context-fr/views/fail-check.html")
         } else {
-          console.log("I got here!")
           window.open("/mc-context-fr/views/finish.html")
         }
       }
-            
-          /*
-          .fail(function () {
-            alert("Un problème est survenu lors de l'écriture dans la base de données. Veuillez contacter le chercheur pour plus d'informations.")
-          })
-            */
-
-
-      /*
-      on_finish: function () {
-        console.log(jsPsych.data.get()); //final data
-        var data = jsPsych.data.get();
-        $.ajax({
-          type: "POST",
-          url: "/MC-context/experiment-data",
-          data: JSON.stringify({ data: data, 
-            subject_id: subject_id}),
-          contentType: "application/json"
-        })
-          .done(function () {
-            // do this within the flow of the experiments
-            if (pass_practice < 2) {
-              window.location.href = "MC-context/return"
-            } else {
-              window.location.href = "MC-context/finish";
-            }
-          })
-          .fail(function () {
-            alert("Un problème est survenu lors de l'écriture dans la base de données. Veuillez contacter le chercheur pour plus d'informations.")
-          })
-      }
-          */
     }); 
 
     /* create timeline */
@@ -183,11 +150,11 @@
       choices: ['Continuer']
     }
 
-    /*
+    
     timeline.push(enter_fullscreen); 
     timeline.push(trial_in_fullscreen);
     timeline.push(audio_on);
-    */
+    
 
     ////////////////////////////////////////////////////////////////////////
     ///////////////////// INTRO ////////////////////////////////////////////
@@ -285,8 +252,6 @@
       response_allowed_while_playing: false
     }
 
-    //timeline.push(practice_preamble);
-
     var pass_practice = 0 //need to get to 2
     var practice_tries = 0
     var practice_trials = {
@@ -370,7 +335,7 @@
         }
       }
     }
-    //timeline.push(practice_trials);
+    timeline.push(practice_trials);
 
     var practice_eval = { // need this as a buffer...
       type: jsPsychHtmlButtonResponse,
@@ -384,7 +349,7 @@
           }, 100); 
         },
     }
-    //timeline.push(practice_eval);
+    timeline.push(practice_eval);
 
     var finish_practice = {
       type: customImageButtonResponsePromptPos, 
@@ -406,34 +371,7 @@
         },
     }
 
-  //timeline.push(finish_practice);
-
-/*   var conditional_preamble = {
-    timeline: [
-      {
-        type: customImageAudioButtonResponsePromptPos, 
-        stimulus: 'img/intro_conditional.png',
-        stimulus_height: 450, 
-        stimulus_audio: context =="ID" ? 'audio/preamble_id.mp3' : 'audio/preamble_fn.mp3',
-        choices: ["Continue"],
-        prompt: context == "ID" ? preamble_id : preamble_fn,
-        prompt_before_stim: true,
-        response_allowed_while_playing: false
-      },
-      {
-        type: customImageAudioButtonResponsePromptPos, 
-        stimulus: 'img/intro_conditional.png',
-        stimulus_height: 450, 
-        stimulus_audio: context == "ID" ? 'audio/preamble2_id.mp3' : 'audio/preamble2_fn.mp3',
-        choices: ["Continue"],
-        prompt: (context == "ID" ? prompt_id : prompt_fn) + "<br>",
-        prompt_before_stim: true,
-        response_allowed_while_playing: false
-      },
-    ]
-  }
-
-  timeline.push(conditional_preamble); */
+  timeline.push(finish_practice);
 
   ////////////////////////////////////////////////////////////////////////
   ///////////////////// STUDY PHASE //////////////////////////////////////
@@ -530,24 +468,12 @@
     var trial_timeline_4 = generate_trials(att_trials.slice(1), is_attention = true);
     var trial_timeline_5 = generate_trials(all_trials.slice(11), is_attention = false);
 
-    /*
-    var trial_timeline_1 = generate_trials(all_trials.slice(0,3), is_attention = false);
-    var trial_timeline_2 = generate_trials(att_trials.slice(0,1), is_attention = true);
-    var trial_timeline_3 = generate_trials(all_trials.slice(3, 5), is_attention = false); 
-    var trial_timeline_4 = generate_trials(att_trials.slice(1), is_attention = true);
-    var trial_timeline_5 = generate_trials(all_trials.slice(5), is_attention = false);
-    */
 
     var crit_trials = [trial_timeline_1, trial_timeline_2, 
                         trial_timeline_3, trial_timeline_4, 
                         trial_timeline_5]
-    //timeline.push(trial_timeline_1);
-    //timeline.push(trial_timeline_2);
-    //timeline.push(trial_timeline_3);
-    //timeline.push(trial_timeline_4);
-    //timeline.push(trial_timeline_5);
 
-    //timeline = timeline.concat(crit_trials);
+    timeline = timeline.concat(crit_trials);
     
     ////////////////////////////////////////////////////////////////////////
     ///////////////////// demog Qs start from here /////////////////////////
@@ -681,7 +607,7 @@
       }
     }
 
-    /*
+    /* DOES NOT APPLY TO FRANCE
     var demog_ethnic = {
       type: jsPsychSurveyMultiSelect,
       preamble: demog_require_answer,
@@ -753,7 +679,7 @@
       demog_final_feedback, 
     ];
 
-    /*
+    
     demog_qs.map(function (demog_q) {
       if (!demog_q.data) {
         demog_q.data = {}
@@ -761,7 +687,7 @@
       demog_q.data.phase = "demog";
       timeline.push(demog_q);
     })
-      */
+      
     
     /* start the experiment */
     jsPsych.run(timeline);

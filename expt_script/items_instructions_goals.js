@@ -232,7 +232,7 @@ var practice_trials = shuffle([
       trial_penguin_talk: "img/" + trial_item + "_" + trial_variety_monster + "_talk.png",
       // blue monster has this and that
       trial_audio: "audio/" + trial_item + "_" + trial_variety_monster + ".mp3",
-      // Manchot says blue penguin has more
+      // Penguin says blue monster has more
       trial_penguin: "audio/" + trial_item + "_penguin_" + response_monster + ".mp3",
       trial_penguin_text: get_response_text(response_monster, trial_item, trial_item_fr),
       trial_type: "critical",    
