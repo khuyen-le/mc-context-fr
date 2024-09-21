@@ -219,7 +219,7 @@ var practice_trials = shuffle([
     
     let trial_obj = {
       trial_text_fn: trial_goal_text + "<br>",
-      trial_text_id: get_trial_text_id(trial_item),
+      trial_text_id: get_trial_text_id(trial_item_fr),
       //trial_goal_penguin: "audio/" + trial_item + "_penguin_goal.mp3",
       intro_audio_fn: "audio/" + trial_item + "_penguin_goal.mp3",
       intro_audio_id: "audio/" + trial_item + "_intro.mp3",

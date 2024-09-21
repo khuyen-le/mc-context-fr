@@ -23,6 +23,7 @@
   <script src="scripts/plugins/customs/video-button-response-prompt-position.js"></script>
   <script src="expt_script/instructions_demog.js"></script>
   <script src="expt_script/items_instructions_goals.js"></script>
+  <script src="expt_script/file_list.js"></script>
   <script src="expt_script/countries_languages.js"></script>
   <link href="css/jspsych.css" type="text/css" rel="stylesheet"></link>
   <link href="css/experiment.css" rel="stylesheet" type="text/css">
@@ -38,6 +39,7 @@
     /* initialize jsPsych */
     var jsPsych = initJsPsych({
       show_progress_bar: true,
+      message_progress_bar: 'Pourcentage complet',
       auto_update_progress_bar: false,
       on_finish: function(){
         fetch("https://pipe.jspsych.org/api/data/", {
@@ -74,32 +76,32 @@
     console.log(context);
 
     // PRELOADING
-    var img_stimuli_dir = '<%- img_stimuli_dir %>';
-    img_stimuli_dir = img_stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
-    img_stimuli_dir = img_stimuli_dir.map(function (stim) {
+    //var img_stimuli_dir = '<%- img_stimuli_dir %>';
+    //img_stimuli_dir = img_stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
+    img_stimuli_dir = imgList.map(function (stim) {
       return "img/" + stim;
     })
-    let stimuli_dir_img = img_stimuli_dir.filter(stim => stim.includes(".png"));
-    //console.log(stimuli_dir_img);
 
-    var audio_stimuli_dir = '<%- audio_stimuli_dir %>';
-    audio_stimuli_dir = audio_stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
-    audio_stimuli_dir = audio_stimuli_dir.map(function (stim) {
+    //var audio_stimuli_dir = '<%- audio_stimuli_dir %>';
+    //audio_stimuli_dir = audio_stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
+    audio_stimuli_dir = audioList.map(function (stim) {
       return "audio/" + stim;
     })
-    let stimuli_dir_audio = audio_stimuli_dir.filter(stim => stim.includes(".mp3"));
+    console.log(img_stimuli_dir)
+    console.log(audio_stimuli_dir)
+    //let stimuli_dir_audio = audio_stimuli_dir.filter(stim => stim.includes(".mp3"));
     //console.log(stimuli_dir_audio);
 
     var preload = {
       type: jsPsychPreload,
-      //images: stimuli_dir_img, 
-      //audio: stimuli_dir_audio
-      auto_preload: true
+      images: img_stimuli_dir, 
+      audio: audio_stimuli_dir
     };
     timeline.push(preload);
 
     // capture info from Prolific, replace_subject_id
     var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    console.log(subject_id);
     subject_id = "CON-" + context + '-' + subject_id + '-' + jsPsych.randomization.randomID(3); // EN for English 
     var study_id = jsPsych.data.getURLVariable('STUDY_ID');
     var session_id = jsPsych.data.getURLVariable('SESSION_ID');

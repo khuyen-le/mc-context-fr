@@ -583,7 +583,7 @@ var jsPsychSketchpad = (function (jspsych) {
           trial_data.rt = Math.round(performance.now() - this.start_time);
           trial_data.response = response;
           if (this.params.save_final_image) {
-              trial_data.png = this.sketchpad.toDataURL();
+              trial_data.png", = this.sketchpad.toDataURL();
           }
           if (this.params.save_strokes) {
               trial_data.strokes = this.strokes;
