@@ -116,6 +116,14 @@
     var userLang = navigator.language || navigator.userLanguage; 
     jsPsych.data.addProperties({ "user_lang" : userLang});
 
+    /** GRAB SCREEN WIDTH TO EXCLUDE ANYONE RUNNING THIS ON A DESKTOP **/
+    var screenWidth = window.screen.width;
+    var screenHeight = window.screen.height;
+    jsPsych.data.addProperties({ "screen_width" : screenWidth, 
+                                 "screen_height" : screenHeight
+    }, 
+    );
+
     /** CONSENT FORM AND INSTRUCTIONS **/
    var instructions = {
       type: jsPsychInstructions,
