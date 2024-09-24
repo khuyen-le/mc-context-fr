@@ -6,17 +6,18 @@ first_page_instruction =
                   line-height:normal;
                   padding-left:10%;
                   padding-right:10%">
-        <p>Cette expérience est menée par des chercheurs du laboratoire de développement et de langage de l'Université de Californie à San Diego. 
+        <p>Cette expérience est menée par des chercheurs du laboratoire de recherche sur le 
+        développement et le langage de l'Université de Californie à San Diego. 
         Avant de décider de participer, veuillez lire attentivement les informations suivantes:</p>
         <br>
         <p>Dans cette étude, vous lirez des histoires.
         Après chaque histoire, vous entendrez une description de l'histoire et jugerez si la description est correcte ou incorrecte.
        Cette étude fait partie d'un projet plus vaste qui explore le développement cognitif des enfants. 
        Par conséquent, l'étude utilisera une conception simple qui nous permettra de comparer vos jugements d'adultes à ceux des enfants.</p>
-      <p>Si vous avez déjà terminé cette étude ou une étude similaire, veuillez ne pas la reprendre une deuxième fois. 
+      <p>Si vous avez déjà complété cette étude ou une étude similaire, veuillez ne pas la reprendre. 
       Nous prévoyons que l'étude durera environ 17 minutes, y compris le temps nécessaire pour lire les instructions. 
       </p>
-      <p>Si vous rencontrez des problèmes pour terminer la tâche, veuillez contacter le chercheur via Prolific.</p>
+      <p>Si vous rencontrez des problèmes pour completer la tâche, veuillez contacter le chercheur via Prolific.</p>
 <br><br><br>
         <div id="legal">
       <p><b><u>Consentement à participer:</u></b></p>
@@ -70,7 +71,7 @@ early_end_instr = `<h1>Merci d'avoir participé à l'étude.</h1>
 ///////////////////////// demog questions /////////////////////////
 demog_instr = ["Enfin, nous aimerions vous poser quelques questions sur vous. Vos réponses resteront confidentielles."]
 demog_require_answer = `<p style="font-size:small;">Les questions marquées d'un <font color="brown">*</font> nécessitent une réponse.</p>`
-label_done = "Terminé!"
+label_done = "Complété!"
 
 
 demog_current_country_instr = `Où vivez-vous actuellement ? Choisissez un pays dans le menu déroulant.`
